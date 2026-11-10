@@ -100,7 +100,7 @@ function drawCurve(plan, C, R, cur) {
     <path d="${path(mid)}" fill="none" stroke="#22c55e" stroke-width="1.6"/>
     <line x1="${X(cur)}" x2="${X(cur)}" y1="${Y(gCur)}" y2="${H - b}" stroke="#a5a09c" stroke-dasharray="3 3"/>
     <circle cx="${X(cur)}" cy="${Y(gCur)}" r="3.5" fill="#fff" stroke="#766f6b" stroke-width="1.5"/>
-    <text class="axis" x="${X(cur) + 6}" y="${H - b - 6}">current ${hm(cur)} · ${pct(gCur)}</text>
+    <text class="axis" x="${X(cur) - 6}" y="${H - b - 6}" text-anchor="end">current ${hm(cur)}</text><text class="axis" x="${X(cur) - 6}" y="${H - b - 18}" text-anchor="end">${pct(gCur)}</text>
     <line x1="${X(plan.tau)}" x2="${X(plan.tau)}" y1="${Y(plan.goodput)}" y2="${H - b}" stroke="#f55036" stroke-dasharray="3 3"/>
     <circle cx="${X(plan.tau)}" cy="${Y(plan.goodput)}" r="4" fill="#f55036"/>
     <text class="axis" x="${X(plan.tau) + 7}" y="${Y(plan.goodput) - 7}" style="fill:#0c0a09">optimum ${hm(plan.tau)} · ${pct(plan.goodput)}</text>
