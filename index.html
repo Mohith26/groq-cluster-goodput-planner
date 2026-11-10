@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clusters · Goodput planner · GroqCloud (concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <img class="logo" src="assets/groq-logo.svg" alt="groq">
+  <div class="crumb"><span class="sel">Northwind AI <i data-lucide="chevrons-up-down"></i></span><span class="slash">/</span><span class="sel">pretrain-405b <i data-lucide="chevrons-up-down"></i></span></div>
+  <div class="spacer"></div>
+  <nav class="nav"><a>Playground</a><a>API Keys</a><a class="active">Dashboard</a><a>Docs</a><span class="gear"><i data-lucide="settings"></i></span><span class="avatar"></span></nav>
+</header>
+<div class="shell">
+  <aside class="side">
+    <a>Metrics</a><a>Usage</a><a>Logs</a><a>Batch</a><a>Limits</a><a class="active">Clusters <span class="newtag">New</span></a>
+  </aside>
+  <main class="main">
+    <div class="ph"><h1>Clusters</h1>
+      <div class="right">
+        <div class="toggle">Show spares <span class="switch" id="spares"></span></div><span class="vsep"></span>
+        <button class="btn"><i data-lucide="refresh-ccw"></i>Refresh</button>
+        <button class="btn"><i data-lucide="server"></i>gb300-iad-01 · <span id="fleet-size"></span><i data-lucide="chevrons-up-down" class="chev"></i></button>
+        <button class="btn"><i data-lucide="activity"></i>Job: pretrain-405b<i data-lucide="chevrons-up-down" class="chev"></i></button>
+      </div></div>
+    <div class="sub">Reserved GB300 NVL72 capacity for your organization</div>
+    <div class="note">Note: Telemetry can be delayed by up to 15 minutes. Forecast as of <span id="asof"></span> UTC. Synthetic fleet data in this demo.</div>
+    <div class="tabs"><span>Overview</span><span class="on">Goodput planner <span class="newtag">New</span></span><span>Health</span><span>Reservations</span></div>
+
+    <section class="kpis">
+      <div class="card kpi"><div class="row"><span class="lab">Expected interruptions</span><span class="val" id="k-int"></span></div><div class="desc" id="k-int-d"></div></div>
+      <div class="card kpi"><div class="row"><span class="lab">Projected goodput</span><span class="val" id="k-good"></span></div><div class="desc" id="k-good-d"></div></div>
+      <div class="card kpi"><div class="row"><span class="lab">Checkpoint every</span><span class="val" id="k-tau"></span></div><div class="desc" id="k-tau-d"></div></div>
+      <div class="card kpi"><div class="row"><span class="lab">GPU-hours recovered</span><span class="val" id="k-gpuh"></span></div><div class="desc" id="k-gpuh-d"></div></div>
+    </section>
+
+    <section class="grid2">
+      <div class="card">
+        <h3>Rack interruption risk <i data-lucide="circle-help"></i></h3>
+        <div class="cap" id="map-cap"></div>
+        <div class="racks" id="racks"></div>
+        <div class="legend"><span>Expected interruptions / week<span class="scale" id="scale"></span><span id="scale-max"></span></span><span><i style="border:1.5px solid #1c1917;background:#fff"></i>Selected for the job</span><span><i style="background:#f7f7f7;border:1px solid #e7e5e4"></i>Held as spare</span><span>Cells = 18 compute trays</span></div>
+      </div>
+      <div class="card chart">
+        <h3>Goodput vs. checkpoint interval <i data-lucide="circle-help"></i></h3>
+        <div class="cap" id="curve-cap"></div>
+        <div id="curve"></div>
+        <div class="ctrl">
+          <div><label>Racks for the job</label><span class="v" id="v-n"></span><input type="range" id="in-n" min="16" max="40" step="1" value="32"></div>
+          <div><label>Checkpoint write</label><span class="v" id="v-c"></span><input type="range" id="in-c" min="1" max="15" step="0.5" value="4"></div>
+          <div><label>Restart after interruption</label><span class="v" id="v-r"></span><input type="range" id="in-r" min="5" max="60" step="1" value="25"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid3">
+      <div class="card">
+        <h3 id="rack-title"></h3>
+        <div class="cap" id="rack-cap"></div>
+        <table class="tbl"><thead><tr><th>Tray</th><th class="n">Exp. / 30d</th><th class="n">SBE/day</th><th class="n">CRC/day</th><th class="n">Temp</th><th>Main driver</th></tr></thead><tbody id="trays"></tbody></table>
+      </div>
+      <div class="card">
+        <h3>Backtest: plan made <span id="bt-asof"></span> <i data-lucide="circle-help"></i></h3>
+        <div class="cap" id="bt-cap"></div>
+        <div id="bt-rows" style="margin-top:8px"></div>
+        <div class="callout" id="bt-call"></div>
+      </div>
+      <div class="card chart">
+        <h3>Is the risk calibrated? <i data-lucide="circle-help"></i></h3>
+        <div class="cap" id="cal-cap"></div>
+        <div id="cal"></div>
+        <table class="tbl" id="drivers"></table>
+      </div>
+    </section>
+    <footer>Unofficial concept demo by Mohith Gajjela. Not affiliated with Groq. Synthetic fleet data calibrated to the public Llama 3 interruption rate.</footer>
+  </main>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
